@@ -1,0 +1,83 @@
+﻿@*首页-右侧-用户面板*@
+
+@*1.用户未登录*@
+
+@*2.显示已登录用户信息*@
+
+@*3.显示主题发布用户信息*@
+
+@using System.Security.Claims;
+@using Web.Services.EntitiesServices;
+@model Web.Model.Entities.User
+@inject IdentityService IdentityService
+
+@if(Model.Name != null) {
+    <div class="panel">
+        <div class="header">
+            @if(User.Identity.Name == Model.Name) {
+                <span class="col_fade">个人信息</span>
+            }
+            else {
+                <span class="col_fade">作者</span>
+            }
+        </div>
+        <div class="inner">
+            <div class="user_card">
+                <div>
+                    <a class="user_avatar" href="@Url.Content($"/User/Index/{Model.UserId}")">
+                        <img src="@Model.Avatar")" title="@Model.Name">
+                    </a>
+                    <span class="user_name"><a class="dark" href="@Url.Content($"/User/Index/{Model.UserId}")"> @Model.Name </a></span>
+                    <div class="board clearfix">
+                        <div class="floor">
+                            <span class="big">积分: @Model.Score </span>
+                        </div>
+                    </div>
+                    <div class="space clearfix"></div>
+                    <span class="signature">
+                        “
+                        @if(string.IsNullOrEmpty(Model.Signature)) {
+                            <text>
+
+                            这家伙很懒，什么个性签名都没有留下。
+
+                            </text>
+                        }
+                        else {
+                            @Model.Signature
+                        }
+                        ”
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    //已登录
+    if(User.Claims.Any(p => p.Type == ClaimTypes.Name)) {
+        <div class="panel">
+            <div class="inner">
+                <a href="@Url.Action("Add","Topic")" id="create_topic_btn">
+                    <span class="span-success">发布话题</span>
+                </a>
+            </div>
+        </div>
+    }
+}
+else {
+    <div class="panel">
+        <div class="inner">
+            <div>
+                您可以
+                <a href="@Url.Action("Login","Account")">登录</a>
+                或
+                <a href="@Url.Action("Register","Account")">注册</a>
+                @*, 也可以
+                    <a href="http://cnodejs.org/auth/github">
+                        <span class="span-info">
+                            通过 GitHub 登录
+                        </span>
+                    </a>*@
+            </div>
+        </div>
+    </div>
+}

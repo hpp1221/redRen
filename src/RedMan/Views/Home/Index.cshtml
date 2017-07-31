@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "红人社区";
+    Layout = "_Layout";
+}
+
+@model Web.Model.Paging.PagingModel<IndexTopicsViewModel>
+@section sidebar{
+    @await Html.PartialAsync("_PartialSidebar")
+}
+
+<div id="content">
+    <div class="panel">
+        <!--分类-->
+        <div class="header" id="index_header">
+            <a href="@Url.Content("/Home/Index/0/")" class="topic-tab ">全部</a>
+            @if(ViewData["q"] == null)
+            {
+                <a href="@Url.Content("/Home/Index/1/")" class="topic-tab ">精华</a>
+                <a href="@Url.Content("/Home/Index/2/")" class="topic-tab ">分享</a>
+                <a href="@Url.Content("/Home/Index/3/")" class="topic-tab ">问答</a>
+                <a href="@Url.Content("/Home/Index/4/")" class="topic-tab ">二手</a>
+            }
+        </div>
+        <!--首页Tab标签-->
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var $header = $('#index_header');
+                var current_tab=@ViewData["tab"];
+                var index = 0;
+                $header.find('a').each(function () {
+                    var $a = $(this);
+                    if(current_tab === index){
+                        $a.addClass('current-tab');
+                    }
+                    index++;
+                })
+            })
+        </script>
+
+        <div class="inner no-padding">
+            <div id="topic_list">
+                <!--以此为一个单元，显示一条主题-->
+                @if(Model.ModelList.Count != 0)
+                {
+                    @foreach(var item in Model.ModelList)
+                    {
+                        <div class="cell">
+                            <a class="user_avatar pull-left" href="@Url.Content($"/User/index/{item.UserId}")">
+                                <img src="@Url.Content(item.UserAvatarUrl)" title="@item.UserName">
+                            </a>
+                            <span class="reply_count pull-left">
+                                <span class="count_of_replies" title="回复数">
+                                    @item.RepliesCount
+                                </span>
+                                <span class="count_seperator">/</span>
+                                <span class="count_of_visits" title="点击数">
+                                    @item.VisitsCount
+                                </span>
+                            </span>
+                            @if(item.RepliesCount > 0)
+                            {
+                                <a class="last_time pull-right" href="@item.LastReplyUrl">
+                                    <img class="user_small_avatar" src="@item.LastReplyUserAvatarUrl">
+                                    <span class="last_active_time">@item.LastReplyDateTime</span>
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="last_time pull-right" href="@Url.Content($"/Topic/Index/{item.TopicId}")">
+                                    <span class="last_active_time">@item.CreateDateTime</span>
+                                </a>
+                            }
+                            <div class="topic_title_wrapper">
+                                @if(item.Top)
+                                {
+                                    <span class="put_top">置顶</span>
+                                }
+                                else
+                                {
+                                    if(item.Good)
+                                    {
+                                        <span class="put_good">精华</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="topiclist-tab">@item.Type</span>
+                                    }
+                                }
+                                <a class="topic_title" href="@Url.Content($"/Topic/Index/{item.TopicId}")" title="@item.Title">
+                                    @item.Title
+                                </a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="cell">无数据</div>
+                }
+            </div>
+
+            <!--分页区-->
+            <div class="pagination" current_page="1">
+                @functions{
+                    public string GetUrl(long pageIndex)
+                    {
+                        return Url.Content($"?pageIndex={pageIndex}");
+                    }
+                }
+                <page paging-info="Model.PagingInfo" page-url="x => GetUrl(x)"></page>
+            </div>
+            <!--分页区-->
+        </div>
+    </div>
+</div>

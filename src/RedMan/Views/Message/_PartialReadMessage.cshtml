@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Web.Model.Entities.Message>
+
+
+<div class="header">
+    <span class="col_fade">过往信息</span>
+</div>
+@if(Model != null)
+{
+    if(Model.Count() > 0)
+    {
+        foreach(var item in Model)
+        {
+            <div class="cell message" message_id="@item.MessageId">
+                <span>
+                    <a href="@Url.Content($"/User/Index/{item.FromUserId}")" target="_blank">@item.FromUserName</a>
+                    @item.Content
+                    <a id="message_title" href="@Url.Content($"/Topic/Index/{item.Topic_Id}#{item.FromReplyId}")" target="_blank">@item.Tilte</a>
+                </span>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="inner">
+            <p>无消息</p>
+        </div>
+    }
+}

@@ -1,0 +1,30 @@
+﻿<div id="sidebar">
+    <!--右侧用户面板-->
+    <!--用户面板-调用视图组件-显示登陆用户信息-->
+    @await Component.InvokeAsync(nameof(UserPanel),new { username = "loginUserName" })
+
+    <!--右侧显示无人回复的话题-->
+    <div class="panel">
+        <div class="header">
+            <span class="col_fade">无人回复的话题</span>
+        </div>
+        <div class="inner">
+            <!--无人回复的话题-调用视图组件-->
+            @await Component.InvokeAsync(nameof(ZeroReplySubject))
+        </div>
+    </div>
+
+    <!--右侧等级用户排行-->
+    <div class="panel">
+        <div class="header">
+            <span class="col_fade">积分榜</span>
+            &nbsp;
+            <a class="dark" href="javascript:;">TOP 100 &gt;&gt;</a>
+        </div>
+        <div class="inner">
+            <!--前10用户-调用视图组件-->
+            @await Component.InvokeAsync(nameof(Top10))
+        </div>
+    </div>
+    <!--右侧等级用户排行-->
+</div>

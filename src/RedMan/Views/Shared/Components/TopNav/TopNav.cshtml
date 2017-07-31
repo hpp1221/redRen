@@ -1,0 +1,39 @@
+﻿@*首页-头部-右侧导航菜单*@
+
+@*1.用户未登陆*@
+
+@*2.用户已登录*@
+
+@using System.Security.Claims;
+@using Web.Services.EntitiesServices;
+@model Web.Model.Entities.User
+@inject IdentityService IdentityService
+
+@*已登录*@
+@if(User.Claims.Any(p => p.Type == ClaimTypes.Name)) {
+    <li><a href="@Url.Action("Index","Home")">首页</a></li>
+    <li>
+        <a href="@Url.Content("/Message/Index/")">
+            @if(Model != null)
+            {
+                if(Model.UnreadMsg_Count > 0)
+                {
+                    <span class='big messages_count'>@Model.UnreadMsg_Count</span>
+                }
+            }
+            未读消息
+        </a>
+    </li>
+    @*<li><a href="" target="">关于</a></li>*@
+    <li><a href="@Url.Action("Settings","User")">设置</a></li>
+    <li>
+        <a href="@Url.Action("Logout","Account")" data-method="post" rel="nofollow">退出</a>
+    </li>
+}
+@*未登录*@
+else {
+    <li><a href="@Url.Action("Index","Home")">首页</a></li>
+    @*<li><a href="" target="">关于</a></li>*@
+    <li><a href="@Url.Action("Register","Account")">注册</a></li>
+    <li><a href="@Url.Action("Login","Account")">登录</a></li>
+}

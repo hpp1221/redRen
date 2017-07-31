@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- style -->
+    <link rel="stylesheet" href="~/css/index.min.3c50e680.min.css" media="all">
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/site.min.js"></script>
+    </environment>
+    <environment names="Development">
+        <script type="text/javascript" src="~/libs/jquery-2.1.0.js"></script>
+        <script type="text/javascript" src="~/libs/lodash.compat.js"></script>
+        <script type="text/javascript" src="~/libs/jquery-ujs.js"></script>
+        <script type="text/javascript" src="~/libs/bootstrap/js/bootstrap.js"></script>
+        <script type="text/javascript" src="~/libs/jquery.caret.js"></script>
+        <script type="text/javascript" src="~/libs/jquery.atwho.js"></script>
+        <script type="text/javascript" src="~/libs/markdownit.js"></script>
+        <script type="text/javascript" src="~/libs/code-prettify/prettify.js"></script>
+        <script type="text/javascript" src="~/libs/qrcode.js"></script>
+        <script type="text/javascript" src="~/javascripts/main.js"></script>
+        <script type="text/javascript" src="~/javascripts/responsive.js"></script>
+    </environment>
+    <title>@ViewData["Title"]</title>
+</head>
+<body>
+    <!-- navbar -->
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container">
+                <ul class="nav pull-left">
+                    <li>
+                        <a href="@Url.Action("Index","Home")">
+                            <text style="font-size:24px;">红人社区</text>
+                        </a>
+                    </li>
+                </ul>
+
+                <form id="search_form" class="navbar-search" action="@Url.Content($"/Home/Index/0/")">
+                    <input type="text" id="q" name="q" class="search-query span3" value="@ViewData["q"]">
+                </form>
+                <!--首页-头部-右侧-导航菜单-->
+                <ul class="nav pull-right">
+                    @await Component.InvokeAsync(nameof(TopNav))
+                </ul>
+                <!--首页-头部-右侧-导航菜单-->
+                <a class="btn btn-navbar" id="responsive-sidebar-trigger">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="main">
+        <!--右侧边栏-->
+        @RenderSection("sidebar",true)
+        <!--右侧边栏-->
+        <!--主体部分-->
+        @RenderBody()
+        <!--主体部分-->
+    </div>
+    <div id="backtotop" style="top: 358px; right: 0px;">回到顶部</div>
+
+    <div id="footer">
+        <div id="footer_main">
+        </div>
+    </div>
+    <div id="sidebar-mask"></div>
+
+    <script type="text/javascript">
+        //搜索框提交
+        $('#search_form').submit(function () {
+            var query = $('#q').val();
+            var action = "/Home/Index/0/" + query + "/";
+            $(this).attr('action', action);
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+﻿@model AllTopicViewModel
+
+@section sidebar{
+    @await Html.PartialAsync("_PartialSidebar")
+}
+
+<div id="content">
+    <div class="panel">
+        <div class="header">
+            <ul class="breadcrumb">
+                <li><a href="@Url.Action("Index","Home")">主页</a><span class="divider">/</span></li>
+                <li class="active"><a href="@Url.Content($"/User/index/{Model.User.UserId}")">@Model.User.Name 的主页</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel">
+        @if((string)ViewData["Type"] == "pub")
+        {
+            <div class="header">@Model.User.Name 创建的话题</div>
+        }
+        else
+        {
+            <div class="header">@Model.User.Name 参与的话题</div>
+        }
+        <div class="inner padding">
+            <div id="topic_list">
+                @if(Model.Topics != null)
+                {
+                    @foreach(var item in Model.Topics.ModelList)
+                    {
+                        <div class="cell">
+                            <a class="user_avatar pull-left" href="@Url.Content($"/User/Index/{item.UserId}")">
+                                <img src="@item.UserAvatarUrl" title="@item.UserName">
+                            </a>
+                            <span class="reply_count pull-left">
+                                <span class="count_of_replies" title="回复数">
+                                    @item.RepliesCount
+                                </span>
+                                <span class="count_seperator">/</span>
+                                <span class="count_of_visits" title="点击数">
+                                    @item.VisitsCount
+                                </span>
+                            </span>
+                            @if(item.RepliesCount > 0)
+                            {
+                                <a class="last_time pull-right" href="@item.LastReplyUrl">
+                                    <img class="user_small_avatar" src="@item.LastReplyUserAvatarUrl">
+                                    <span class="last_active_time">@item.LastReplyDateTime</span>
+                                </a>
+                            }
+                            <div class="topic_title_wrapper">
+                                <span class="topiclist-tab">@item.Type</span>
+                                <a class="topic_title" href="@Url.Content($"/Topic/Index/{item.TopicId}")" title="@item.Title">
+                                    @item.Title
+                                </a>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+            <!--分页区-->
+            <div class="pagination" current_page="1">
+                @functions{
+                    public string GetUrl(long pageIndex)
+                    {
+                        return Url.Content($"/Home/Index?pageIndex={pageIndex}");
+                    }
+                }
+                <page paging-info="Model.Topics.PagingInfo" page-url="x => GetUrl(x)"></page>
+            </div>
+            <!--分页区-->
+        </div>
+    </div>
+</div>

@@ -1,0 +1,94 @@
+﻿@model UserSettingsViewModel
+
+@section sidebar{
+    @await Html.PartialAsync("_PartialSidebar")
+}
+
+<div id="content">
+    <div class="panel">
+        <div class="header">
+            <ul class="breadcrumb">
+                <li><a href="@Url.Action("Index","Home")">主页</a><span class="divider">/</span></li>
+                <li class="active">设置</li>
+            </ul>
+        </div>
+        <div class="inner">
+            <form id="setting_form" class="form-horizontal" action="@Url.Content($"/User/Settings")" method="post" enctype="multipart/form-data">
+                @if((bool)ViewData["Error1"])
+                {
+                    <div class="alert alert-error">
+                        <a class="close" data-dismiss="alert" href="#">&times;</a>
+                        <strong>@Html.ValidationSummary()</strong>
+                    </div>
+                }
+                <input class="input-xlarge readonly" id="UserId" name="UserId" size="30" type="hidden" value="@Model.UserId">
+                <div class="control-group">
+                    <label class="control-label" for="Name">头像</label>
+                    <div class="controls">
+                        <img id="user_avatar_img" name="user_avatar_img" style="width:120px; height:120px; margin-bottom: 15px;" src="@Model.Avatar" />
+                        <p>点击图片切换</p>
+                    </div>
+                    <div class="controls">
+                        <input id="user_avatar_input" style="display:none" name="AvatarFile" class="input-xlarge readonly" size="30" type="file" value="" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="Name">用户名</label>
+                    <div class="controls">
+                        <input class="input-xlarge readonly" id="Name" name="Name" size="30" type="text" value="@Model.Name">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="Email">电子邮件</label>
+                    <div class="controls">
+                        <input class="input-xlarge readonly" id="Email" name="Email" size="30" type="text" value="@Model.Email">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="Signature">个性签名</label>
+                    <div class="controls">
+                        <textarea class="input-xlarge" id="Signature" name="Signature" size="30">@Model.Signature</textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <input type="submit" class="span-primary submit_btn" data-loading-text="保存中.." value="保存设置">
+                </div>
+            </form>
+        </div>
+    </div>
+    @*修改密码*@
+    <div class="panel" id="changep_assword">
+        @await Html.PartialAsync("_PartialChangePassword",new ChangePasswordViewModel() { UserId = Model.UserId })
+    </div>
+    @*修改密码*@
+</div>
+
+<script type="text/javascript">
+    $('#user_avatar_img').click(function () {
+        $('#user_avatar_input').click();
+        //上传图片
+        $('#user_avatar_input').change(function () {
+            console.log($(this).val());
+            var objUrl = getObjectURL(this.files[0]);
+            console.log(objUrl);
+            if (objUrl) {
+                $('#user_avatar_img').css('width:120px; height:120px;');
+                $('#user_avatar_img').attr('src', objUrl);
+            }
+        });
+    })
+
+    //获取图片路径
+    function getObjectURL(file){
+        var url=null;
+        if(window.createObjectURL!=null){
+            url=window.createObjectURL(file);
+        }else if(window.URL!=undefined){
+            url=window.URL.createObjectURL(file);
+        }else if(window.webkitURL!=undefined){
+            url=window.webkitURL.createObjectURL(file);
+        }
+        return url;
+    }
+</script>

@@ -1,0 +1,89 @@
+﻿@model TopicRepliesViewModel
+
+@if(Model.Replies != null)
+{
+    if(Model.Replies.Count() != 0)
+    {
+        <div class="panel">
+            <div class="header">
+                <span class="col_fade"><span id="reply_count">@Model.Replies.Count()</span> 回复</span>
+            </div>
+            @{ 
+                int index = 1;
+            }
+            @foreach(var item in Model.Replies)
+            {
+                <div class="cell reply_area reply_item" id="reply @index " reply_id="@item.ReplyId" reply_to_id="@item.Reply_Id">
+                    <a class="anchor" id="@item.ReplyId"></a>
+                    <div class="author_content">
+                        <a href="@Url.Content($"/User/Index/{item.Author_Id}")" class="user_avatar">
+                            <img src="@Url.Content($"/User/GetUserAvatarUrl/{item.Author_Id}")" title="@item.Author_Id" />
+                        </a>
+                        <div class='user_info'>
+                            <a class='dark reply_author' href="@Url.Content($"/User/Index/{item.Author_Id}")">@item.Author_Name</a>
+                            <a class="reply_time" href="#@item.ReplyId">
+                                @index 楼• @item.CreateDateTime
+                                @{index++;}
+                            </a>
+                        </div>
+                        <div class="user_action">
+                            @if(Model.LoginUser != null)
+                            {
+                                @if(Model.LoginUser.UserId == item.Author_Id)
+                                {
+                                    <a href="@Url.Content($"/Reply/Edit/{item.ReplyId}")" class="edit_reply_btn">
+                                        <i class="fa fa-pencil-square-o" title="编辑"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="delete_reply_btn">
+                                        <i class="fa fa-trash" title="删除"></i>
+                                    </a>
+                                }
+                            }
+                            <span>
+                                <i class="fa fa-reply reply2_btn" title="回复"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="reply_content from-@item.Author_Id">
+                        <div class="markdown-text">
+                            @if(item.Html.StartsWith("<p>@"))
+                            {
+                                var firstSpaceIndex = item.Html.IndexOf(' ');
+                                string atUserName = string.Empty;
+                                if(firstSpaceIndex == -1)
+                                { atUserName = item.Html.Substring(3,item.Html.Length - 8);}
+                                else
+                                { atUserName = item.Html.Substring(3,firstSpaceIndex - 3); }
+                                var replaceStr = $"<a href='/User/Index/{item.Author_Id}' style='float: left;'>{atUserName}</a>";
+                                @Html.Raw(item.Html.Replace(atUserName,replaceStr))
+                            }
+                            else
+                            {
+                                @Html.Raw(item.Html)
+                            }
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <div class="reply2_area">
+                            <form class="reply2_form" action="@Url.Content($"/Reply/AddToReply/{item.ReplyId}")" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="reply_id" value="@item.ReplyId">
+                                <div class="markdown_editor in_editor">
+                                    <div class="markdown_in_editor">
+                                        <textarea class='span8 editor reply_editor'
+                                                  id="reply2_editor_@item.ReplyId" name='r_content' rows='4'></textarea>
+                                        <div class="editor_buttons">
+                                            <input class="span-primary reply2_submit_btn submit_btn" type="submit"
+                                                   data-id="@item.ReplyId" data-loading-text="回复中.." value="回复">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}

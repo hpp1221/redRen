@@ -1,0 +1,182 @@
+﻿@model UserViewModel
+
+@{
+    ViewData["Title"] = "个人主页";
+}
+
+@section sidebar{
+    @await Html.PartialAsync("_PartialSidebar")
+}
+
+<div id="content">
+    <div class="panel">
+        <div class="header">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")">主页</a>
+                    <span class="divider">/</span>
+                </li>
+            </ul>
+        </div>
+        <div class="inner userinfo">
+            <div class="user_big_avatar">
+                <img src="@Model.User.Avatar" class="user_avatar" title="@Model.User.Avatar">
+            </div>
+            <a class="dark">@Model.User.Name</a>
+            <div class="user_profile">
+                <ul class="unstyled">
+                    <span class="big">@Model.User.Score</span> 积分
+                    @if(Model.User.Collect_Topic_Count > 0)
+                    {
+                        <li>
+                            <a class="dark" href="@Url.Content($"/User/Collections/{Model.User.UserId}")" target="_blank">
+                                <span class="big collect-topic-count">@Model.User.Collect_Topic_Count</span>个话题收藏
+                            </a>
+                        </li>
+                    }
+                    <li>
+                        <i class="fa fa-lg fa-fw fa-github"></i>
+                        <a class="dark" href="mailto:@Model.User.Email" target="_blank">
+                            @Model.User.Email
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <p class="col_fade">注册时间 @Model.User.CreateDateTime</p>
+            @if(Model.LoginUserIsAdmin)
+            {
+                if(Model.User.Name != User.Identity.Name)
+                {
+                    if(Model.User.IsAdmin)
+                    {
+                        <span class='span-common span-success' id='set_star_btn'>取消管理员</span>
+                    }
+                    else
+                    {
+                        <span class='span-common' id='set_star_btn'>设为管理员</span>
+                    }
+
+                }
+
+            }
+        </div>
+    </div>
+    <div class="panel">
+        <div class="header">
+            <span class="col_fade">最近创建的话题</span>
+        </div>
+        @if(Model.User.Topic_Count > 0)
+        {
+            foreach(var item in Model.Topic_Published)
+            {
+                <div class="cell">
+                    <a class="user_avatar pull-left" href="@Url.Content($"/User/Index/{item.Author_Id}")">
+                        <img src="@Model.User.Avatar" title="@Model.User.Name">
+                    </a>
+                    <span class="reply_count pull-left">
+                        <span class="count_of_replies" title="回复数">
+                            @item.Reply_Count
+                        </span>
+                        <span class="count_seperator">/</span>
+                        <span class="count_of_visits" title="点击数">
+                            @item.Visit_Count
+                        </span>
+                    </span>
+                    @if(item.Reply_Count > 0)
+                    {
+                        <a class="last_time pull-right" href="@Url.Content($"/Topic/Index/{item.TopicId}")">
+                            <img class="user_small_avatar" src="@Url.Content($"/User/GetUserAvatarUrl/{item.Last_Reply_UserId}")">
+                            <span class="last_active_time">@item.Last_ReplyDateTime</span>
+                        </a>
+                    }
+                    <div class="topic_title_wrapper">
+                        <a class="topic_title" href="@Url.Content($"/Topic/Index/{item.TopicId}")" title="@item.Title">
+                            @item.Title
+                        </a>
+                    </div>
+                </div>
+            }
+            <div class="cell more">
+                <a class="dark" href="@Url.Content($"/User/AllTopic/{Model.User.UserId}?type=pub")">查看更多»</a>
+            </div>
+        }
+        else
+        {
+            <div class="cell">
+                无
+            </div>
+        }
+
+    </div>
+    <div class="panel">
+        <div class="header">
+            <span class="col_fade">最近参与的话题</span>
+        </div>
+        @if(Model.User.Reply_Count > 0)
+        {
+            @foreach(var item in Model.Topic_Join)
+            {
+                <div class="cell">
+                    <a class="user_avatar pull-left" href="@Url.Content($"/User/Index/{item.Author_Id}")">
+                        <img src="@Model.User.Avatar" title="@Model.User.Name">
+                    </a>
+                    <span class="reply_count pull-left">
+                        <span class="count_of_replies" title="回复数">
+                            @item.Reply_Count
+                        </span>
+                        <span class="count_seperator">/</span>
+                        <span class="count_of_visits" title="点击数">
+                            @item.Visit_Count
+                        </span>
+                    </span>
+                    @if(item.Reply_Count > 0)
+                    {
+                        <a class="last_time pull-right" href="@Url.Content($"/Topic/Index/{item.TopicId}")">
+                            <img class="user_small_avatar" src="@Url.Content($"/User/GetUserAvatarUrl/{item.Last_Reply_UserId}")">
+                            <span class="last_active_time">@item.Last_ReplyDateTime</span>
+                        </a>
+                    }
+                    <div class="topic_title_wrapper">
+                        <a class="topic_title" href="@Url.Content($"/Topic/Index/{item.TopicId}")" title="@item.Title">
+                            @item.Title
+                        </a>
+                    </div>
+                </div>
+            }
+            <div class="cell more">
+                <a class="dark" href="@Url.Content($"/User/AllTopic/{Model.User.UserId}?type=join")">查看更多»</a>
+            </div>
+
+        }
+        else
+        {
+            <div class="cell">
+                无
+            </div>
+        }
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    //管理员设置
+    $('#set_star_btn').click(function () {
+        var $this=$(this);
+        var userId=@Model.User.UserId;
+        var url='/User/SetAdmin';
+        $.post(url,{id:userId},function(data){
+            console.log(data.status);
+            if(data.status=='error'){
+                alert('修改失败');
+            }else{
+                if(data.status=='admin'){
+                    $this.html('取消管理员');
+                }else if(data.status=='cancel_admin'){
+                    $this.html('设为管理员');
+                }
+                $this.toggleClass('span-success');
+            }
+        })
+    })
+</script>

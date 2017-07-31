@@ -1,0 +1,19 @@
+﻿@*无人回复的话题，显示5条*@
+
+@model IEnumerable<Web.Model.Entities.Topic>
+
+@if(Model.Count() != 0) {
+    <ul class="unstyled">
+        @foreach(var item in Model) {
+            <li>
+                <div>
+                    <a class="dark topic_title" href="@Url.Content($"/Topic/Index/{item.TopicId}")" title="@item.Title">@item.Title</a>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else {
+    <p>无</p>
+}
+
